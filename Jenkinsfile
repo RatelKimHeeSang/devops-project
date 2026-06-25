@@ -11,7 +11,7 @@ pipeline {
         }
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./'
+                dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'dependency-check'
             }
         }
         stage('SonarQube Analysis') {
@@ -21,7 +21,7 @@ pipeline {
                     sonar-scanner \
                     -Dsonar.projectKey=flask-app \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=$SONAR_HOST_URL\
+                    -Dsonar.host.url=$SONAR_HOST_URL \
                     -Dsonar.token=$SONAR_AUTH_TOKEN
                     '''
                 }
@@ -39,7 +39,7 @@ pipeline {
         }
         stage('Docker Push') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub']) {
+                withDockerRegistry([credentialsId: 'dockerhub', url: 'https://index.docker.io/v1/']) {
                     sh 'docker push $IMAGE_NAME:$BUILD_NUMBER'
                 }
             }
