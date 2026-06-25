@@ -11,7 +11,9 @@ pipeline {
         }
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'dependency-check'
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                    dependencyCheck additionalArguments: '--scan ./ --nvdApiKey $NVD_API_KEY', odcInstallation: 'dependency-check'
+                }
             }
         }
         stage('SonarQube Analysis') {
